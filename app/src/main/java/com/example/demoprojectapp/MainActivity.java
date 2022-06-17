@@ -13,11 +13,15 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.clientapp.OffloadingInterface;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.Socket;
 
@@ -25,9 +29,12 @@ public class MainActivity extends AppCompatActivity {
     TextView outputTextView;
     OffloadingInterface offloadingInterface;
     Button button;
+    Button button2;
     ImageView connectedImageView;
     StatusThread myThread;
+    EditText editText;
     boolean status = false;
+    Long start;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -48,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         outputTextView = findViewById(R.id.outputTextView);
         button = findViewById(R.id.button);
         connectedImageView = findViewById(R.id.imageView);
+        editText = findViewById(R.id.editTextTextPersonName);
+        button2 = findViewById(R.id.button2);
 
 //------------------------Set Intent to another package----------------------------------
         Intent intent = new Intent("com.example.clientapp.OffloadingService");
@@ -63,27 +72,31 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // if status True offload else do not offload
                 if (!status) {
                     RunLocalThread runLocalThread = new RunLocalThread();
                     runLocalThread.run();
                 } else {
-
-                    if (offloadingInterface != null) {
-                        try {
-                            offloadingInterface.offload("here");
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                        RunOffloadThread runThread1 = new RunOffloadThread();
-                        runThread1.run();
-
-                    } else {
-                        outputTextView.setText("Service Not Available");
-                    }
+                    button_basic_logic("2",editText.getText().toString());
                 }
             }
+
         });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!status) {
+                    RunLocalThread2 runLocalThread2 = new RunLocalThread2();
+                    runLocalThread2.run();
+                } else {
+                    button_basic_logic("2",editText.getText().toString());
+                }
+
+            }
+        });
+
+
 
         //Need to add delay while activity is created, otherwise app crashes
 
@@ -97,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 1000);
     }
+
     //----------------------------------checking status---------------------------------------
     private class StatusThread extends Thread {
         @Override
@@ -131,8 +145,28 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             helperclass helper = new helperclass();
-           // String x = helper.fib_metric(46);
-           // outputTextView.setText(x);
+            try {
+                JSONObject x = helper.function_metric(Integer.parseInt(editText.getText().toString()));
+                outputTextView.setText(x.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    class RunLocalThread2 implements Runnable{
+
+        @Override
+        public void run() {
+            helperclass helper = new helperclass();
+            try {
+                JSONObject x = helperclass.function_metric_add_million();
+                outputTextView.setText(x.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
     }
     //--------------------------Offload----------------------------------------------
@@ -168,7 +202,14 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
                 offloadingInterface.set_response_result_false();
-
+                Long end = System.currentTimeMillis();
+                Long diff = end-start;
+                outputTextView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        outputTextView.setText(diff+"");
+                    }
+                });
             } catch (InterruptedException | RemoteException e) {
                 e.printStackTrace();
 
@@ -176,6 +217,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     //----------------------------------------------------------------------------------
+            void button_basic_logic(String func, String para){
+                if (!status) {
+                    RunLocalThread runLocalThread = new RunLocalThread();
+                    runLocalThread.run();
+                } else {
 
+                    if (offloadingInterface != null) {
+                        try {
+                            start = System.currentTimeMillis();
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("func", "2");
+                            jsonObject.put("para",editText.getText());
+                            offloadingInterface.offload(jsonObject.toString());
+                        } catch (RemoteException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                        RunOffloadThread runThread1 = new RunOffloadThread();
+                        runThread1.run();
 
+                    } else {
+                        outputTextView.setText("Service Not Available");
+                    }
+                }
+            }
 }

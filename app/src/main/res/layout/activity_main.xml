@@ -32,14 +32,15 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="0sp"
-        android:layout_height="wrap_content"
+        android:layout_width="348dp"
+        android:layout_height="64dp"
         android:layout_marginLeft="25sp"
-        android:layout_marginTop="18sp"
+        android:layout_marginTop="12dp"
         android:layout_marginRight="25sp"
-        android:text="This app runs a demo code and after code is run prints hello. "
+        android:text="This app calculates nth term of the fibonacci series"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -47,18 +48,36 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
+        android:layout_marginStart="36dp"
         android:background="@drawable/button_shape"
-        android:paddingLeft="75sp"
-        android:paddingRight="75sp"
+        android:paddingLeft="30sp"
+        android:paddingRight="30sp"
+        android:text="Run"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintHorizontal_bias="0.038"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/button2" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="232dp"
+        android:background="@drawable/button_shape"
+        android:paddingLeft="30sp"
+        android:paddingRight="30sp"
         android:text="Run"
         android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -66,9 +85,7 @@
         android:layout_marginLeft="25sp"
         android:layout_marginTop="25dp"
         android:layout_marginRight="25sp"
-        android:layout_marginBottom="25sp"
         android:background="@drawable/output_result_outline"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button"
@@ -109,7 +126,7 @@
                 android:layout_width="100sp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Time taken for transfer :"
+                android:text="function"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/textView11"
@@ -241,6 +258,28 @@
                 app:layout_constraintTop_toTopOf="@+id/textView7" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Enter no. and click run"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <EditText
+        android:id="@+id/editTextTextPersonName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

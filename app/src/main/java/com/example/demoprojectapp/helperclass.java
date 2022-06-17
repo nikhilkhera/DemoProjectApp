@@ -1,8 +1,11 @@
 package com.example.demoprojectapp;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class helperclass {
 
-    public static String add_million(){
+    public static int add_million(){
         Long start = System.currentTimeMillis();
 
 
@@ -13,10 +16,7 @@ public class helperclass {
             System.out.println(i);
         }
 
-
-        long end = System.currentTimeMillis();
-        Long diff = end-start;
-        return  diff+"";
+        return  i;
     }
     static int fib(int n)
     {
@@ -24,21 +24,51 @@ public class helperclass {
             return n;
         return fib(n-1) + fib(n-2);
     }
+    //function2
 
-    static String format(int n)
-    {
+    static JSONObject function_metric_add_million() throws JSONException{
         System.out.println("started");
         Long start = System.currentTimeMillis();
 
-        int x = fib(n);
+        //-----------wrapped function---------//
+
+        int x = add_million();
+
+        //-------------------------------------//
 
         System.out.println("Ended");
         long end = System.currentTimeMillis();
         long diff = end-start;
 
-        return diff+"";
+        JSONObject json = new JSONObject();
+        json.put("output",x+"");
+        json.put("computation_time",diff+"");
+        json.put("function",2);
+        json.put("device","local");
+        return json;
+    }
 
+    //function value 1
+    static JSONObject function_metric(int n) throws JSONException {
+        System.out.println("started");
+        Long start = System.currentTimeMillis();
 
+        //-----------wrapped function---------//
+
+        int x = fib(n);
+
+        //-------------------------------------//
+
+        System.out.println("Ended");
+        long end = System.currentTimeMillis();
+        long diff = end-start;
+
+        JSONObject json = new JSONObject();
+        json.put("output",x+"");
+        json.put("computation_time",diff+"");
+        json.put("function",1);
+        json.put("device","local");
+        return json;
     }
 }
 
