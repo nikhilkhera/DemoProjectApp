@@ -27,6 +27,10 @@ import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
     TextView outputTextView;
+    TextView executedOnTextview;
+    TextView timeTakenForExecutionTextview;
+    TextView functionTextview;
+    TextView totalTimeTakenTextView;
     OffloadingInterface offloadingInterface;
     Button button;
     Button button2;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editText;
     boolean status = false;
     Long start;
+    Long end;
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -57,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
         connectedImageView = findViewById(R.id.imageView);
         editText = findViewById(R.id.editTextTextPersonName);
         button2 = findViewById(R.id.button2);
+        executedOnTextview = findViewById(R.id.executedOnTextView);
+        timeTakenForExecutionTextview = findViewById(R.id.timeTakenForExecutionTextView);
+        functionTextview = findViewById(R.id.functiontextview);
+        totalTimeTakenTextView = findViewById(R.id.totalTimeTakenTextView);
+
 
 //------------------------Set Intent to another package----------------------------------
         Intent intent = new Intent("com.example.clientapp.OffloadingService");
@@ -76,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     RunLocalThread runLocalThread = new RunLocalThread();
                     runLocalThread.run();
                 } else {
-                    button_basic_logic("2",editText.getText().toString());
+                    button_basic_logic("1");
                 }
             }
 
@@ -90,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     RunLocalThread2 runLocalThread2 = new RunLocalThread2();
                     runLocalThread2.run();
                 } else {
-                    button_basic_logic("2",editText.getText().toString());
+                    button_basic_logic("2");
                 }
 
             }
@@ -146,8 +156,11 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             helperclass helper = new helperclass();
             try {
+                start = System.currentTimeMillis();
                 JSONObject x = helper.function_metric(Integer.parseInt(editText.getText().toString()));
-                outputTextView.setText(x.toString());
+                end = System.currentTimeMillis();
+                add_to_ui(x);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -161,8 +174,10 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             helperclass helper = new helperclass();
             try {
+                start = System.currentTimeMillis();
                 JSONObject x = helperclass.function_metric_add_million();
-                outputTextView.setText(x.toString());
+                end = System.currentTimeMillis();
+                add_to_ui(x);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -182,13 +197,9 @@ public class MainActivity extends AppCompatActivity {
 
                     if (offloadingInterface.get_response_result()) {
                         String response_data = offloadingInterface.get_response_data();
-                        outputTextView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                outputTextView.setText(response_data);
-                            }
-                        });
-
+                        end = System.currentTimeMillis();
+                        JSONObject jsonObject = new JSONObject(response_data);
+                        add_to_ui(jsonObject);
                         break;
                     }
                 }
@@ -202,22 +213,19 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
                 offloadingInterface.set_response_result_false();
-                Long end = System.currentTimeMillis();
-                Long diff = end-start;
-                outputTextView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        outputTextView.setText(diff+"");
-                    }
-                });
+
+
+
             } catch (InterruptedException | RemoteException e) {
                 e.printStackTrace();
 
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
     //----------------------------------------------------------------------------------
-            void button_basic_logic(String func, String para){
+            void button_basic_logic(String func){
                 if (!status) {
                     RunLocalThread runLocalThread = new RunLocalThread();
                     runLocalThread.run();
@@ -227,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             start = System.currentTimeMillis();
                             JSONObject jsonObject = new JSONObject();
-                            jsonObject.put("func", "2");
+                            jsonObject.put("func", func+"");
                             jsonObject.put("para",editText.getText());
                             offloadingInterface.offload(jsonObject.toString());
                         } catch (RemoteException | JSONException e) {
@@ -240,5 +248,50 @@ public class MainActivity extends AppCompatActivity {
                         outputTextView.setText("Service Not Available");
                     }
                 }
+            }
+
+            void add_to_ui(JSONObject jsonObject) throws JSONException {
+                String output = jsonObject.getString("output");
+                String computation_time = jsonObject.getString("computation_time");
+                String function = jsonObject.getString("function");
+                String device = jsonObject.getString("device");
+
+                outputTextView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        outputTextView.setText(output);
+                    }
+                });
+
+                executedOnTextview.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        executedOnTextview.setText(device);
+                    }
+                });
+
+                functionTextview.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        functionTextview.setText(function);
+                    }
+                });
+
+                timeTakenForExecutionTextview.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        timeTakenForExecutionTextview.setText(computation_time);
+                    }
+                });
+
+                totalTimeTakenTextView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        totalTimeTakenTextView.setText((end-start)+"");
+                    }
+                });
+
+
+
             }
 }
